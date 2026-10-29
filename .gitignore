@@ -1,0 +1,22 @@
+node_modules/
+.next/
+out/
+build/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Generated QR codes and room tokens
+generated-qr/
+room101-token.txt
+scripts/rooms.txt
+scripts/seed_rooms.sql
+
+# Dependencies and build output
+node_modules/
+.next/
