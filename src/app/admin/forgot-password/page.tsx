@@ -17,7 +17,8 @@ export default function ForgotPasswordPage() {
     const supabase = createSupabaseBrowserClient();
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo:
+        "https://hotel-guest-service-rho.vercel.app/auth/reset-password",
     });
 
     setLoading(false);
@@ -27,16 +28,22 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    setMessage("If this email is registered, a password reset link has been sent.");
+    setMessage(
+      "If this email is registered, a password reset link has been sent."
+    );
   }
 
   return (
     <main style={{ maxWidth: 420, margin: "80px auto", padding: 24 }}>
       <h1>Forgot Password</h1>
-      <p>Enter your admin email address to receive a password reset link.</p>
+
+      <p>
+        Enter your admin email address to receive a password reset link.
+      </p>
 
       <form onSubmit={handleSubmit}>
         <label>Email Address</label>
+
         <input
           type="email"
           value={email}
@@ -53,7 +60,11 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          style={{ padding: 12, width: "100%", cursor: "pointer" }}
+          style={{
+            padding: 12,
+            width: "100%",
+            cursor: "pointer",
+          }}
         >
           {loading ? "Sending..." : "Send Reset Link"}
         </button>
