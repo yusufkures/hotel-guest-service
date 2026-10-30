@@ -1,13 +1,12 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,9 +19,10 @@ export default function ResetPasswordPage() {
 
     async function verifyResetLink() {
       const supabase = createSupabaseBrowserClient();
-      const code = searchParams.get("code");
-      const tokenHash = searchParams.get("token_hash");
-      const type = searchParams.get("type");
+      const currentUrl = new URL(window.location.href);
+      const code = currentUrl.searchParams.get("code");
+      const tokenHash = currentUrl.searchParams.get("token_hash");
+      const type = currentUrl.searchParams.get("type");
       const hash = window.location.hash;
 
       if (code) {
@@ -31,7 +31,9 @@ export default function ResetPasswordPage() {
         if (!active) return;
 
         if (error) {
-          setMessage("This reset link is invalid or expired. Please request a new one.");
+          setMessage(
+            "This reset link is invalid or expired. Please request a new one."
+          );
           return;
         }
       } else if (tokenHash && type === "recovery") {
@@ -43,7 +45,9 @@ export default function ResetPasswordPage() {
         if (!active) return;
 
         if (error) {
-          setMessage("This reset link is invalid or expired. Please request a new one.");
+          setMessage(
+            "This reset link is invalid or expired. Please request a new one."
+          );
           return;
         }
       } else if (hash.includes("access_token=")) {
@@ -52,8 +56,14 @@ export default function ResetPasswordPage() {
         const refreshToken = params.get("refresh_token");
         const hashType = params.get("type");
 
-        if (hashType !== "recovery" || !accessToken || !refreshToken) {
-          setMessage("This reset link is invalid or expired. Please request a new one.");
+        if (
+          hashType !== "recovery" ||
+          !accessToken ||
+          !refreshToken
+        ) {
+          setMessage(
+            "This reset link is invalid or expired. Please request a new one."
+          );
           return;
         }
 
@@ -65,11 +75,15 @@ export default function ResetPasswordPage() {
         if (!active) return;
 
         if (error) {
-          setMessage("Could not verify the reset link. Please request a new one.");
+          setMessage(
+            "Could not verify the reset link. Please request a new one."
+          );
           return;
         }
       } else {
-        setMessage("Reset link information is missing. Please request a new reset email.");
+        setMessage(
+          "Reset link information is missing. Please request a new reset email."
+        );
         return;
       }
 
@@ -84,7 +98,7 @@ export default function ResetPasswordPage() {
     return () => {
       active = false;
     };
-  }, [searchParams]);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -130,8 +144,9 @@ export default function ResetPasswordPage() {
 
       {verified && (
         <form onSubmit={handleSubmit}>
-          <label>New Password</label>
+          <label htmlFor="new-password">New Password</label>
           <input
+            id="new-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -146,8 +161,9 @@ export default function ResetPasswordPage() {
             }}
           />
 
-          <label>Confirm New Password</label>
+          <label htmlFor="confirm-password">Confirm New Password</label>
           <input
+            id="confirm-password"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -182,5 +198,13 @@ export default function ResetPasswordPage() {
         </button>
       )}
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<main style={{ padding: 24 }}>Loading...</main>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
