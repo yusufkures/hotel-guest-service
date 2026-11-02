@@ -26,14 +26,14 @@ function ResetPasswordForm() {
       const hash = window.location.hash;
 
       if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        const { error } =
+          await supabase.auth.exchangeCodeForSession(code);
 
         if (!active) return;
 
         if (error) {
-          setMessage(
-            "This reset link is invalid or expired. Please request a new one."
-          );
+          console.error("Password reset verification error:", error);
+          setMessage(`Verification failed: ${error.message}`);
           return;
         }
       } else if (tokenHash && type === "recovery") {
@@ -45,9 +45,8 @@ function ResetPasswordForm() {
         if (!active) return;
 
         if (error) {
-          setMessage(
-            "This reset link is invalid or expired. Please request a new one."
-          );
+          console.error("Password reset OTP error:", error);
+          setMessage(`Verification failed: ${error.message}`);
           return;
         }
       } else if (hash.includes("access_token=")) {
@@ -62,7 +61,7 @@ function ResetPasswordForm() {
           !refreshToken
         ) {
           setMessage(
-            "This reset link is invalid or expired. Please request a new one."
+            "Reset link information is invalid. Please request a new one."
           );
           return;
         }
@@ -75,9 +74,8 @@ function ResetPasswordForm() {
         if (!active) return;
 
         if (error) {
-          setMessage(
-            "Could not verify the reset link. Please request a new one."
-          );
+          console.error("Password reset session error:", error);
+          setMessage(`Verification failed: ${error.message}`);
           return;
         }
       } else {
@@ -127,7 +125,8 @@ function ResetPasswordForm() {
     setLoading(false);
 
     if (error) {
-      setMessage(error.message);
+      console.error("Password update error:", error);
+      setMessage(`Password update failed: ${error.message}`);
       return;
     }
 
@@ -145,6 +144,7 @@ function ResetPasswordForm() {
       {verified && (
         <form onSubmit={handleSubmit}>
           <label htmlFor="new-password">New Password</label>
+
           <input
             id="new-password"
             type="password"
@@ -161,7 +161,10 @@ function ResetPasswordForm() {
             }}
           />
 
-          <label htmlFor="confirm-password">Confirm New Password</label>
+          <label htmlFor="confirm-password">
+            Confirm New Password
+          </label>
+
           <input
             id="confirm-password"
             type="password"
@@ -181,7 +184,11 @@ function ResetPasswordForm() {
           <button
             type="submit"
             disabled={loading}
-            style={{ padding: 12, width: "100%", cursor: "pointer" }}
+            style={{
+              padding: 12,
+              width: "100%",
+              cursor: "pointer",
+            }}
           >
             {loading ? "Updating..." : "Update Password"}
           </button>
