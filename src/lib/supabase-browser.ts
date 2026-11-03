@@ -1,4 +1,3 @@
-
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
@@ -12,7 +11,7 @@ export function createSupabaseBrowserClient() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         auth: {
-          flowType: "implicit",
+          flowType: "pkce",
         },
       }
     );
