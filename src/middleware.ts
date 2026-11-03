@@ -7,6 +7,11 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
+  // Do not refresh the Supabase session on the password reset page.
+  if (request.nextUrl.pathname === "/auth/reset-password") {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
